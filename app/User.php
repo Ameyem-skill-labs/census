@@ -9,6 +9,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use App\Models\ProfileRelated\Profile;
+use App\Models\MatrimonyUsers;
 
 class User extends Authenticatable implements JWTSubject
 // class User extends Authenticatable
@@ -36,6 +37,11 @@ class User extends Authenticatable implements JWTSubject
     public function profile()
     {
         return $this->hasOne(Profile::class);
+    }
+
+    public function matrimonyusers()
+    {
+        return $this->hasOne(MatrimonyUsers::class);
     }
 
     public function sendPasswordResetNotification($token)

@@ -21,26 +21,22 @@ class DatabaseSeeder extends Seeder
        
     $this->call([
         RoleSeeder::class,
-        // IntiperuSeeder::class,
         UserSeeder::class, 
         StateSeeder::class,
+        
+
+        
+        // TLDistrictSeeder::class,
+        // TLMandalSeeder::class,        
+        // TLVillageSeeder::class,                
+        PersonSeed::class,
+        ProfessionCategorySeeder::class,
+        ProfileSeeder::class,     
         
         DistrictSeeder::class,
         MandalSeeder::class,        
         VillageSeeder::class,
-        
-        TLDistrictSeeder::class,
-        TLMandalSeeder::class,        
-        TLVillageSeeder::class,                
-        PersonSeed::class,
-        PersonRelatedTableSeeder::class,
-        // HouseDetailsTableSeeder::class,               
-        TweetTypeSeeder::class,
-        TweetsTableSeeder::class,
-        ProfessionCategorySeeder::class,
-        ProfileSeeder::class,      
-        SanghamSeeder::class,
-        
+
         
        
     ]);

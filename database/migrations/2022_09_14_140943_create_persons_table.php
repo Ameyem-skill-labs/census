@@ -23,20 +23,18 @@ return new class extends Migration
             $table->char('house_no',52);
             $table->string('intiperu',120);
             $table->string('peru',120);
-            $table->string('father_husb_name',120);
+            $table->string('street_name',120);
+            $table->string('dependant_name',120);
+            $table->string('dependant_related_as',20);
             $table->char('gender',5);
             $table->date('dob');
             $table->tinyInteger('edu_qualification_id');
             $table->tinyInteger('profession_id');
-            $table->tinyInteger('pensoner_type_id');
-            $table->boolean('own_a_house');
-            $table->tinyInteger('vehicle_type_id');
-            $table->boolean('own_agri_land');
-            $table->float('land_area', 4, 2);  
-            $table->char('aadhaar',16);
-            $table->char('ration_card',16);
             $table->char('mobile',16);
             $table->foreignId('created_by_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->boolean('is_submitted');
+            $table->boolean('is_approved');
+            $table->foreignId('approved_by_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
         

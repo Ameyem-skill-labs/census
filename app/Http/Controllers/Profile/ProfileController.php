@@ -171,6 +171,7 @@ class ProfileController extends Controller
     // }
     public function upload(Request $request, $field)
     {
+        Log::info($field,"imageField");
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);

@@ -27,7 +27,18 @@ class PersonSeed extends Seeder
     public function run()
     {
         
-        
+        // $table->string('dependant_name',120);
+        // $table->string('dependant_related_as',20);
+        // $table->char('gender',5);
+        // $table->date('dob');
+        // $table->tinyInteger('edu_qualification_id');
+        // $table->tinyInteger('profession_id');
+        // $table->char('mobile',16);
+        // $table->foreignId('created_by_id')->nullable()->constrained('users')->onDelete('cascade');
+        // $table->boolean('is_submitted');
+        // $table->boolean('is_approved');
+        // $table->foreignId('approved_by_id')->nullable()->constrained('users')->onDelete('cascade');
+        // $table->timestamps();
 
         $items = [           
             
@@ -35,37 +46,30 @@ class PersonSeed extends Seeder
             'ward_no'=>'01',
             'house_no'=>'12-345',
             'intiperu'=>'Nalamara', 'peru' => 'adi',
-            'father_husb_name'=>'arun',
+            'dependant_name'=>'arun',
+            'dependant_related_as'=>'Husband',
            'gender'=>'F',
            'dob'=> string2date('14-04-1994'), //Carbon::now()->format('Y-m-d'),
             'edu_qualification_id'=>1,
             'profession_id'=>1,
-            'pensoner_type_id'=>1,
-            'own_a_house'=>True,
-            'vehicle_type_id'=>1,
-            'own_agri_land'=>True,
-            'land_area'=> 2.0,
-           'aadhaar'=>'123456781234',
-           'ration_card'=>'123456781234',
-            'mobile'=>'8800197779','created_by_id'=>1,'created_at' => Carbon::now()->format('Y-m-d H:i:s'), ],
+
+
+            'mobile'=>'8800197779','created_by_id'=>1,'is_submitted'=>false,'is_approved'=>false,
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s'), ],
 
             ['id' => 2, 'village_id' => 1,
             'ward_no'=>'01',
             'house_no'=>'12-345',
             'intiperu'=>'Nalamara', 'peru' => 'Vedansh',
-            'father_husb_name'=>'arun',
+            'dependant_name'=>'arun',
+            'dependant_related_as'=>'Father',
            'gender'=>'M',
            'dob'=> string2date('03-07-2016'),//Carbon::now()->format('Y-m-d'),
             'edu_qualification_id'=>1,
             'profession_id'=>1,
-            'pensoner_type_id'=>1,
-            'own_a_house'=>False,
-            'vehicle_type_id'=>1,
-            'own_agri_land'=>False,
-            'land_area'=> 2.0,
-           'aadhaar'=>'123456781234',
-           'ration_card'=>'123456781234',
-            'mobile'=>'8800197779','created_by_id'=>1,'created_at' => Carbon::now()->format('Y-m-d H:i:s'), ],
+
+            'mobile'=>'8800197779','created_by_id'=>1,'is_submitted'=>false,'is_approved'=>false,
+            'created_at' => Carbon::now()->format('Y-m-d H:i:s'), ],
            
 
         ];

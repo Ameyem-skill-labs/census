@@ -10,7 +10,21 @@ class ProfessionCategorySeeder extends Seeder
 
     public function run()
     {
-        // DB::table('prof_categories')->insert(
+        $items = [
+            
+            ['id' => 1, 'name' => 'Below 10th'],
+            ['id' => 2, 'name' => '10th'],
+            ['id' => 3, 'name' => '12th'],
+            ['id' => 4, 'name' => 'Graduate/Engeneering/MBBS'],
+            ['id' => 5, 'name' => 'Post Garduate'],            
+            ['id' => 6, 'name' => 'Civil Services'],
+            ['id' => 7, 'name' => 'PhD'],
+            ['id' => 8, 'name' => 'Undeducated'],
+        ];
+        foreach ($items as $item) {
+            \App\Models\ProfileRelated\Qualification::create($item);
+        }
+
             $items = [
                 ['created_by_id'=>1, 'id' => 1, 'name' => 'Government Employee'],
                 ['created_by_id'=>1, 'id' => 2, 'name' => 'Private Employee'],

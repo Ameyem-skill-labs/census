@@ -26,23 +26,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('pensoner_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-
-        Schema::create('vehicle_types', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-
-        Schema::create('agri_land_statuses', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
+      
     }
 
     /**
@@ -52,12 +36,10 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('intiperus');
+
         Schema::dropIfExists('qualifications');
         
         Schema::dropIfExists('professions');
-        Schema::dropIfExists('pensoner_types');
-        Schema::dropIfExists('vehicle_types');
-        Schema::dropIfExists('agri_land_statuses');
+
     }
 };
