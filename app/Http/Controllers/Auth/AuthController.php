@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 // require 'vendor/autoload.php';
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -84,12 +84,17 @@ class AuthController extends Controller
         // return $credentials;
         Log::info('Login: ' );
         
+        // Validation
         $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
+
         $credentials = $request->only('email', 'password');
+
+        // Attempt to authenticate the user
         $token = Auth::attempt($credentials);
+
         if (!$token) {
             return response()->json([
                 'status' => 'error',
@@ -97,15 +102,24 @@ class AuthController extends Controller
             ], 401);
         }
 
+        // Check if the user's email is verified and status is 1
+        $user = Auth::user();
+        if ($user->email_verified_at === null || $user->status !== 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Your email is not verified. Please verify your email.',
+            ], 401);
+        }
 
+        // Proceed with login
         return response()->json([
-                'status' => 'success',
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'bearer',
-                ],
-                'user'=>Auth::user(),
-            ]);
+            'status' => 'success',
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ],
+            'user' => $user,
+        ]);
 
     }
 
@@ -232,7 +246,11 @@ class AuthController extends Controller
         $userCount = User::where('email',$email)->count();
         if($userCount>0){
              // User Email is already activated or not
-             $userDetails=User::where('email',$email)->first();
+             // Your existing code to update the status
+            User::where('email', $email)->update([
+                'status' => 1,
+                'email_verified_at' => Carbon::now() // This will set the current date and time
+            ]);
              if($userDetails->status==1){
                  $message = "Your Account is Already Activated. Please Login.";
                  Session::put('error_message',$message);
@@ -240,13 +258,14 @@ class AuthController extends Controller
              }else{
                  // Update User Status to 1 to Activate Account
                  User::where('email',$email)->update(['status'=>1]);
+
     
                          $messageData=['name'=>$userDetails['name'],'mobile'=>$userDetails['mobile'],'email'=>$email];
                          Mail::send('emails.register',$messageData,function($message) use($email){
-                             $message->to($email)->subject('Welcome to Our E-Commerce');
+                             $message->to($email)->subject('Welcome to ThogataVeera Kshatriya Census App');
                         });
 
-                        $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);
+                        // $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);
 
                     //redirect to login/register with success page
                     $message = " Your Account is Activated. You Can Login Now!";
