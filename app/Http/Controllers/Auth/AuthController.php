@@ -99,7 +99,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized',
-            ], 401);
+            ]);
         }
 
         // Check if the user's email is verified and status is 1
@@ -108,7 +108,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Your email is not verified. Please verify your email.',
-            ], 401);
+            ]);
         }
 
         // Proceed with login
@@ -199,12 +199,12 @@ class AuthController extends Controller
                 }
                 else{
                     $mail_sent = Mail::send('emails.confirmation',$messageData,function($message) use($email){
-                        $message->to($email)->subject('తొగటవీరక్షత్రియ సంఘం యొక్క అనువర్తనం లో చేరిక నిర్ధారణ');
+                        $message->to($email)->subject('తొగటవీరక్షత్రియ సంఘం యొక్క CENSUS అనువర్తనం లో చేరిక నిర్ధారణ');
                     });
             
                     // Check if the mail was sent successfully
                     if ($mail_sent) {
-                        $message = "Please Check Your Email account ({$email})For Confirmation to Activate Your Account!";
+                        $message = "మీ ఈ -మెయిల్ చేసికొని నిర్ధారించండి. ({$email}) \nఅప్పుడే మీ అకౌంట్ వాడుకలోనికి వస్తుంది!";
                     } else {
                         $message = "Error sending confirmation email ({$email}), please try again!";
                     }
