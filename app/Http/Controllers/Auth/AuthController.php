@@ -240,7 +240,7 @@ class AuthController extends Controller
     public function confirm($encodedEmail) {
         $email = base64_decode($encodedEmail);
         $user = User::where('email', $email)->first();
-        Log::info('confirm: ',$user );
+    
         if ($user) {
             if ($user->status == 1) {
                 $message = "Your Account is Already Activated. Please Login.";
@@ -249,13 +249,13 @@ class AuthController extends Controller
                     'message' => $message,
                 ]);
             } else {
-                // $user->update([
-                //     'status' => 1,
-                //     'email_verified_at' => Carbon::now()
-                // ]);
-
-                $user->status = 1;
+                // Manually set the email_verified_at field
                 $user->email_verified_at = Carbon::now();
+    
+                // Set status to 1
+                $user->status = 1;
+    
+                // Save the user to update the database
                 $user->save();
     
                 // Send welcome email
@@ -274,6 +274,7 @@ class AuthController extends Controller
             return abort(404, 'User not found');
         }
     }
+    
     
     public function logout(Request $request)
     {
