@@ -8,7 +8,7 @@ use Hash;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
-use App\Models\ProfileRelated\Profile;
+// use App\Models\ProfileRelated\Profile;
 use Illuminate\Support\Str;
 // use App\Models\MatrimonyUsers;
 
@@ -49,10 +49,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Role::class, 'role_id');
     }
-    public function profile()
-    {
-        return $this->hasOne(Profile::class);
-    }
+    // public function profile()
+    // {
+    //     return $this->hasOne(Profile::class);
+    // }
 
     public function sendPasswordResetNotification($token)
     {
@@ -118,7 +118,7 @@ class User extends Authenticatable implements JWTSubject
         // } else {
         //     $array['avatar'] = asset('images/avatar/dummy.webp');
         // }
-        $array['avatar']=$this->profile->getavatar();
+        // $array['avatar']=$this->profile->getavatar();
         return $array;
     }
     

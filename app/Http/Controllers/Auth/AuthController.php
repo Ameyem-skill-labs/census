@@ -249,10 +249,14 @@ class AuthController extends Controller
                     'message' => $message,
                 ]);
             } else {
-                $user->update([
-                    'status' => 1,
-                    'email_verified_at' => Carbon::now()
-                ]);
+                // $user->update([
+                //     'status' => 1,
+                //     'email_verified_at' => Carbon::now()
+                // ]);
+
+                $user->status = 1;
+                $user->email_verified_at = Carbon::now();
+                $user->save();
     
                 // Send welcome email
                 $messageData = ['name' => $user->name, 'mobile' => $user->mobile, 'email' => $email];
