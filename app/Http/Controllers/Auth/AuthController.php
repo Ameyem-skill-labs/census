@@ -15,6 +15,8 @@ use App\User;
 use App\Http\Controllers\Controller;
 // use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\PublicKeyLoader;
+use Illuminate\Support\Str;
+
 
 
 
@@ -32,7 +34,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login','register','forgotpassword']]);
     }
     // public function loadUser(Request $request)    
     // {
@@ -82,7 +84,7 @@ class AuthController extends Controller
         // $encryptedData = $request->input('encrypted_data');
         // $credentials= decryptData($encryptedData);
         // return $credentials;
-        Log::info('Login: ' );
+        Log::info('Login: ',$request->all() );
         
         // Validation
         $request->validate([
@@ -134,7 +136,7 @@ class AuthController extends Controller
             Session::forget('success_message');
             $data = $request->all();
             // return $data;
-            // echo "<pre>"; print_r($data); die;
+
             $rules=[
                 'surname'=>'required|regex:/^[\pL\s\-]+$/u',
                 'name'=>'required|regex:/^[\pL\s\-]+$/u',
@@ -310,6 +312,148 @@ class AuthController extends Controller
             'user'=>$user,
         ]);
     }
+
+    public function forgotpassword(Request $request){
+        Log::info('forgotPassword: ',$request->all() );
+        if($request->isMethod('post')){
+            $data = $request->all();
+            Session::forget('error_message');
+            Session::forget('success_message');
+
+            $emailCount = User::where('email',$data['email'])->count();
+            if($emailCount==0){
+                $message= "Email Does Not Exists!";
+                Session::put('error_message','Email Does Not Exists!');
+                Session::forget('success_message');
+
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $message,
+                ]);
+            }
+
+            //Generate New Random Password
+            $random_password = Str::random(8);
+            //Encode/secure password
+            $new_password = bcrypt($random_password);
+            User::where('email',$data['email'])->update(['password'=>$new_password]);
+            $userName = User::select('name')->where('email',$data['email'])->first();
+            $email = $data['email'];
+            $name = $userName->name;
+            $messageData = [
+                'email'=>$email,
+                'name'=>$name,
+                'password'=>$random_password
+            ];
+            Mail::send('emails.forgot_password',$messageData,function($message) use($email){
+            $message->to($email)->subject("Get New Password - Thogata");
+            });
+
+            $message = "Please Check Email For New Password!";
+            Session::put('success_message',$message);
+
+            return response()->json([
+                'status' => 'Success',
+                'message' => $message,
+            ]);
+            // return redirect('/login-register');
+        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ]);
+
+    }
+
+    // public function account(Request $request){
+    //     $user_id = Auth::user()->id;
+    //     $userDetails = User::find($user_id)->toArray();
+    //     // $userDetails = json_decode(json_encode($userDetails),true);
+    //     // dd($userDetails); die;
+
+    //     if($request->isMethod('post')){
+    //         $data = $request->all();
+
+
+    //         Session::forget('error_message');
+    //         Session::forget('success_message');
+
+    //         // Validation
+    //         $rules=[
+    //             'name'=>'required|regex:/^[\pL\s\-]+$/u',
+    //             'mobile'=>'required|numeric|digits:11',
+    //             'location_status'=>'required',
+    //             'district'=>'required',
+    //             'pin_code'=>'required',
+    //             'address'=>'required'
+    //         ];
+    //         $customMessages=[
+    //             'name.required'=>'Name is Required',
+    //             'name.alpha'=>'Valid Name is Required',
+    //             'mobile.required'=>'Mobile No. is Required',
+    //             'mobile.numeric'=>'valid Mobile no. is Required',
+    //             'mobile.digits'=>'Number Must be 11 Digit',
+    //             'address'=>'Valid Address is Required',
+    //             'location_status'=>'Select Location Status is Required',
+    //             'district'=>'Select District is Required',
+    //             'pin_code'=>'Valid Pin Code is Required',
+    //         ];
+    //         $this->validate($request,$rules,$customMessages);
+
+    //         $user = User::find($user_id);
+    //         $user->name = $data['name'];
+    //         $user->mobile = $data['mobile'];
+    //         $user->location_status = $data['location_status'];
+    //         $user->district = $data['district'];
+    //         $user->pin_code = $data['pin_code'];
+    //         $user->address = $data['address'];
+    //         $user->save();
+    //         $message = "Your Account Details Has Been Updated Successfully";
+    //         Session::put('success_message',$message);
+    //         return redirect()->back();
+    //     }
+        
+    //     return view('home.user_account')->with(compact('userDetails'));
+    //     // return $userDetails;
+    // }
+
+    // public function chkUserPassword(Request $request){
+    //     if($request->isMethod('post')){
+    //         $data = $request->all();
+
+    //         $user_id = Auth::User()->id;
+    //         $checkPassword = User::select('password')->where('id',$user_id)->first();
+    //         if(Hash::check($data['current_pwd'],$checkPassword->password)){
+    //             return "true";
+    //         }else{
+    //             return "false";
+    //         }
+    //     }
+    // }
+    // public function updateUserPassword(Request $request){
+    //     if($request->isMethod('post')){
+    //         $data = $request->all();
+    //         Session::forget('error_message');
+    //         Session::forget('success_message');
+            
+
+    //         $user_id = Auth::User()->id;
+    //         $checkPassword = User::select('password')->where('id',$user_id)->first();
+    //         if(Hash::check($data['current_pwd'],$checkPassword->password)){
+    //             //Update Password
+    //             $new_pwd = bcrypt($data['new_pwd']);
+    //             User::where('id',$user_id)->update(['password'=>$new_pwd]);
+    //             $message = "Password Updated Successfully";
+    //             Session::put('success_message',$message);
+    //             return redirect()->back();
+
+    //         }else{
+    //             $message = "Current Password is Incorrect!";
+    //             Session::put('error_message',$message);
+    //             return redirect()->back();
+    //         }
+    //     }
+    // }
 
     public function me()
     {

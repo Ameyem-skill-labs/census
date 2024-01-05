@@ -13,8 +13,10 @@ use App\Http\Controllers\Profile\ProfileController;
 
 Route::prefix('')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->name('register');
-    // Route::post('login', [AuthController::class, 'login']);
     Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('forgotpassword', [AuthController::class, 'forgotpassword'])->name('forgotpassword');
+    // Route::post('api/forgotpassword', [AuthController::class, 'forgotPassword']);
+
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::get('user', [AuthController::class, 'loadUser']); 
