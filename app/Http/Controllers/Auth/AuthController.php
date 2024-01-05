@@ -237,48 +237,40 @@ class AuthController extends Controller
         }
     }
 
-    public function confirm($email){
-        return $email;
-        Session::forget('error_message');
-        Session::forget('success_message');
-        $email = base64_decode($email);
-
-        // Check User Email Exists
-
-        $userCount = User::where('email',$email)->count();
-        if($userCount>0){
-             // User Email is already activated or not
-             // Your existing code to update the status
-            User::where('email', $email)->update([
-                'status' => 1,
-                'email_verified_at' => Carbon::now() // This will set the current date and time
-            ]);
-             if($userDetails->status==1){
-                 $message = "Your Account is Already Activated. Please Login.";
-                 Session::put('error_message',$message);
-                 return redirect('/login-register');
-             }else{
-                 // Update User Status to 1 to Activate Account
-                 User::where('email',$email)->update(['status'=>1]);
-
+    public function confirm($encodedEmail) {
+        $email = base64_decode($encodedEmail);
+        $user = User::where('email', $email)->first();
     
-                         $messageData=['name'=>$userDetails['name'],'mobile'=>$userDetails['mobile'],'email'=>$email];
-                         Mail::send('emails.register',$messageData,function($message) use($email){
-                             $message->to($email)->subject('Welcome to ThogataVeera Kshatriya Census App');
-                        });
-
-                        // $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);
-
-                    //redirect to login/register with success page
-                    $message = " Your Account is Activated. You Can Login Now!";
-                    Session::put('success_message',$message);
-                    return redirect('/login-register');
-             }
-        }else{
-            abort(404);
+        if ($user) {
+            if ($user->status == 1) {
+                $message = "Your Account is Already Activated. Please Login.";
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => $message,
+                ]);
+            } else {
+                $user->update([
+                    'status' => 1,
+                    'email_verified_at' => Carbon::now()
+                ]);
+    
+                // Send welcome email
+                $messageData = ['name' => $user->name, 'mobile' => $user->mobile, 'email' => $email];
+                Mail::send('emails.register', $messageData, function ($message) use ($email) {
+                    $message->to($email)->subject('Welcome to ThogataVeera Kshatriya Census App');
+                });
+    
+                $message = "Your Account is Activated. You Can Login Now!";
+                return response()->json([
+                    'status' => 'Success',
+                    'message' => $message,
+                ]);
+            }
+        } else {
+            return abort(404, 'User not found');
         }
-
     }
+    
     public function logout(Request $request)
     {
         Auth::logout();
