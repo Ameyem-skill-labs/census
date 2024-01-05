@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
-use App\Models\ProfileRelated\Profile;
+// use App\Models\ProfileRelated\Profile;
 use Illuminate\Support\Facades\Log;
 use App\Models\TweetRelated\Tweet;
 use App\User;
@@ -57,16 +57,16 @@ class AuthController extends Controller
             $userData['follower_count'] = $followerCount;
             $userData['following_count'] = $followingCount;
             // $userData['avatar']  =asset($user->profile()->avatar);
-            $profile = $user->profile;
+            // $profile = $user->profile;
             // Check if the profile exists
-            $profile = $user->profile;
-            if ($profile) {
-                $userData['avatar'] = asset($profile->avatar);
-            } else {
-                // Provide a default value for the avatar
-                // $userData['avatar'] = asset('path/to/default/avatar.png');
-                $userData['avatar'] = asset('images/avatar/dummy.webp');
-            }
+            // $profile = $user->profile;
+            // if ($profile) {
+            //     $userData['avatar'] = asset($profile->avatar);
+            // } else {
+            //     // Provide a default value for the avatar
+            //     // $userData['avatar'] = asset('path/to/default/avatar.png');
+            //     $userData['avatar'] = asset('images/avatar/dummy.webp');
+            // }
 
             // $userData['avatar'] = asset($profile->avatar);
             return response()->json(['user' => $userData]);
