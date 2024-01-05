@@ -275,46 +275,46 @@ class AuthController extends Controller
         }
     }
 
-    public function confirm($email){
-        // return $email;
-        Session::forget('error_message');
-        Session::forget('success_message');
-        $email = base64_decode($email);
-        // return $email;
-        // Check User Email Exists
+    // public function confirm($email){
+    //     // return $email;
+    //     Session::forget('error_message');
+    //     Session::forget('success_message');
+    //     $email = base64_decode($email);
+    //     // return $email;
+    //     // Check User Email Exists
 
-        $userCount = User::where('email',$email)->count();
-        if($userCount>0){
-             // User Email is already activated or not
-             $userDetails=User::where('email',$email)->first();
-             if($userDetails->status==1){
-                 $message = "Your Account is Already Activated. Please Login in app.";
-                 Session::put('success_message',$message);
-                //  return redirect('/login');
+    //     $userCount = User::where('email',$email)->count();
+    //     if($userCount>0){
+    //          // User Email is already activated or not
+    //          $userDetails=User::where('email',$email)->first();
+    //          if($userDetails->status==1){
+    //              $message = "Your Account is Already Activated. Please Login in app.";
+    //              Session::put('success_message',$message);
+    //             //  return redirect('/login');
 
 
-                    return view('home.success');
-             }else{
-                 // Update User Status to 1 to Activate Account
-                 User::where('email',$email)->update(['status'=>1]);
+    //                 return view('home.success');
+    //          }else{
+    //              // Update User Status to 1 to Activate Account
+    //              User::where('email',$email)->update(['status'=>1]);
     
-                         $messageData=['name'=>$userDetails['name'],'mobile'=>$userDetails['mobile'],'email'=>$email];
-                         Mail::send('emails.register',$messageData,function($message) use($email){
-                             $message->to($email)->subject('Welcome to Thogata Veera Kshatriya Sangham');
-                        });
+    //                      $messageData=['name'=>$userDetails['name'],'mobile'=>$userDetails['mobile'],'email'=>$email];
+    //                      Mail::send('emails.register',$messageData,function($message) use($email){
+    //                          $message->to($email)->subject('Welcome to Thogata Veera Kshatriya Sangham');
+    //                     });
 
-                        // $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);
+    //                     // $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);
 
-                    //redirect to login/register with success page
-                    $message = " Your Account is Activated. You Can Login Now!";
-                    Session::put('success_message',$message);
-                    return view('home.success');
-             }
-        }else{
-            abort(404);
-        }
+    //                 //redirect to login/register with success page
+    //                 $message = " Your Account is Activated. You Can Login Now!";
+    //                 Session::put('success_message',$message);
+    //                 return view('home.success');
+    //          }
+    //     }else{
+    //         abort(404);
+    //     }
 
-    }
+    // }
     
     public function logout(Request $request)
     {
