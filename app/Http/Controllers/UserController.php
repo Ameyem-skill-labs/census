@@ -168,7 +168,7 @@ class UserController extends Controller
                              $message->to($email)->subject('Welcome to Thogata Veera Kshatriya Sangham');
                         });
 
-                        $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);
+                        // $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);
 
                     //redirect to login/register with success page
                     $message = " Your Account is Activated. You Can Login Now!";
@@ -180,6 +180,9 @@ class UserController extends Controller
         }
 
     }
+
+
+    
     public function loginRegister(){
         return view('home.login_register');
     }

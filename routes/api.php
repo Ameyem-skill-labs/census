@@ -19,12 +19,16 @@ Route::prefix('')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
+    Route::get('/confirm/{code}',[AuthController::class, 'confirm']); //user controller too has it
+
     Route::get('user', [AuthController::class, 'loadUser']); 
     Route::put('user', [AuthController::class, 'update']);
+
+
     Route::get('users', [UserController::class, 'getUsers']); 
-    Route::post('username', [UserController::class, 'checkUser']); 
-    Route::get('/confirm/{code}',[UserController::class, 'confirm']);
+    Route::post('username', [UserController::class, 'checkUser']);    
     Route::put('/otheruser', [UserController::class, 'updateOtherUser']);
+    
     Route::get('/census/subplaces', [PeopleController::class, 'getSubPlacesPeopleCount']);
     Route::get('/census/count', [PeopleController::class, 'getTotalPeopleCount']);
     Route::apiResource('/people', 'App\Http\Controllers\Admin\PeopleController');
