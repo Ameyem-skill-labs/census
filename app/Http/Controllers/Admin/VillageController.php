@@ -75,8 +75,6 @@ class VillageController extends Controller
     public function store(Request $request)
 
     {
-        // echo "on the command line";
-        // return response()->json($request->all());
         $user=Auth::user();
         // if (! Gate::allows('village_create')) 
         // {
@@ -84,10 +82,7 @@ class VillageController extends Controller
         // }
 
         try{
-        //    Village::create($request->all()+ ['created_by_id' => $user->id]);
-
             Village::create($request->all()+ ['created_by_id' => $user->id]);
-
 
         }catch(\Illuminate\Database\QueryException $e){
             return ['error'=>$e->getMessage()];
@@ -95,11 +90,7 @@ class VillageController extends Controller
         
         // return $request->name;
         return response()->json(Village::where('name', $request->name)->first());
-        // return Village::get()->where($request->name);
-        // }
 
-        // return 'not done';
-        // return redirect()->route('admin.villages.index');
     }
 
 

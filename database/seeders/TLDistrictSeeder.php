@@ -21,6 +21,6 @@ class TLDistrictSeeder extends Seeder
         ['id' => 540,'census_name' => 'Warangal', 'name' => 'Warangal', 'state_id' => 36],
         ['id' => 541,'census_name' => 'Khammam', 'name' => 'Khammam', 'state_id' => 36],
 ];foreach ($items as $item) {
-    \App\Models\District::create($item);
+    \App\Models\PlaceRelated\District::create($item);
 }     }
 }

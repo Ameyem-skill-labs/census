@@ -69,6 +69,19 @@ class AuthServiceProvider extends ServiceProvider
             return in_array($user->role_id, [1]);
         });
 
+        Gate::define('person_create', function ($user) {
+            return in_array($user->role_id, [1,2,3,6]);
+            // return true; // or some condition based on $user
+        });
+        Gate::define('person_edit', function ($user) {
+            return in_array($user->role_id, [1,2,3,6]);
+            // return true; // or some condition based on $user
+        });
+        Gate::define('person_access', function ($user) {
+            return in_array($user->role_id, [1,2,3,6]);
+            // return true; // or some condition based on $user
+        });
+
         // Auth gates for: Expense management
         Gate::define('expense_management_access', function ($user) {
             return in_array($user->role_id, [1, 2]);

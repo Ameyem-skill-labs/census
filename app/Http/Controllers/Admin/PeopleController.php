@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Input;
 use App\Http\Requests\Admin\StorePersonRequest;
 use App\Http\Requests\Admin\UpdatePersonRequest;
+use App\Models\PlaceRelated\Village;
+use App\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 function dbarray2optionarray($dbarray)
         {
         // return function ($v) use ($max) { return $v > $max; };
@@ -28,26 +32,76 @@ class PeopleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
 
-    public function index(Request $request)
-    {
-        if (! Gate::allows('person_access')) {
-            // return abort(401);
-            return 'not exit';
-        }
-        if ($filterBy = $request->input('filter')) {
-            if ($filterBy == 'all') {
-                Session::put('Person.filter', 'all');
-            } elseif ($filterBy == 'my') {
-                Session::put('Person.filter', 'my');
+     public function index(Request $request)
+     {
+         $village_id = $request->input('village_id');
+         $is_approved=$request->input('is_approved');
+         $is_submitted=$request->input('is_submitted');
+         $district_id = $request->input('district_id'); 
+         $offset = $request->input('offset', 0);
+         $limit = $request->input('limit', 20); // Default limit set to 20
+     
+         $user = Auth::user();
+         Log::info('index request data: ' . json_encode($request->all()));
+         // Create the base query
+         $query = Person::with([
+             'created_by' => function ($query) {
+                 $query->select('id', 'name', 'surname', 'mobile');
+             }, 
+             'village' => function ($query) {
+                 $query->select('id', 'name', 'mandal_id');
+             }, 
+             'village.mandal' => function ($query) {
+                 $query->select('id', 'name');
+             }
+         ]);
+     
+         if ($village_id) {
+            $query->where('village_id', $village_id);
+        } elseif ($district_id) {
+            $villageIds = Village::whereHas('mandal', function ($query) use ($district_id) {
+                $query->where('district_id', $district_id);
+            })->pluck('id');
+        
+            $query->whereIn('village_id', $villageIds);
+        
+            if (isset($is_approved)) {
+                $query->where('is_approved', $is_approved);
+            }
+            if (isset($is_submitted)) {
+                $query->where('is_submitted', $is_submitted);
+            }
+        } else {
+            $query->where('created_by_id', $user->id);
+            
+            if (isset($is_approved)) {
+                $query->where('is_approved', $is_approved);
+            }
+            if (isset($is_submitted)) {
+                $query->where('is_submitted', $is_submitted);
             }
         }
-
-        $people = Person::all();
-        // return $people;
-        return view('admin.people.index', compact('people'));
-    }
+        
+         
+     
+         $people = $query->skip($offset)->take($limit)->get();
+     
+         // Adjust the result to include only required village and mandal details
+         $people->transform(function ($person) {
+             if ($person->village) {
+                 $person->village->makeHidden(['created_by_id', 'created_at', 'updated_at']);
+                 if ($person->village->mandal) {
+                     $person->village->mandal->makeHidden(['assembly_constituency_id', 'district_id', 'created_at', 'updated_at']);
+                 }
+             }
+             return $person;
+         });
+     
+         return response()->json($people);
+     }
+     
+   
 
     public function printPeople(){
         $people = Person::all();
@@ -57,111 +111,114 @@ class PeopleController extends Controller
 
     }
 
-    /**
-     * Show the form for creating new ExpenseCategory.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        if (! Gate::allows('person_create')) {
-            return abort(401);
-        }
-        
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');
-        $states = \App\Models\State::get(["name", "id"]);
-
-        $edu_qulifications = dbarray2optionarray(\App\Models\Qualification::get(["id","name" ]));
-        $professions = dbarray2optionarray(\App\Models\Profession::get(["id","name" ])); 
-        $pension_types =dbarray2optionarray(\App\Models\PensonerType::get(["id","name" ])); 
-        $vehicle_types =dbarray2optionarray(\App\Models\VehicleType::get(["id","name" ]));  
-        
-        // $people = \App\Models\Person::get(["id","name" ]);
-        // return $edu_qulifications;
-        return view('admin.people.create', compact('states','created_bies','edu_qulifications','professions','pension_types','vehicle_types'));
-    }
-
+    
     /**
      * Store a newly created ExpenseCategory in storage.
      *
      * @param  \App\Http\Requests\StorePersonRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePersonRequest $request)
+    public function store(Request $request)
     {
-        if (! Gate::allows('person_create')) {
-            return abort(401);
-        }
+        // return $request->all();
+        Log::info('User data: ' . json_encode($request->all()));
+        // if (!Gate::allows('person_create')) {
+        //     return abort(401);
+        // }
         // return $request->all();//+ ['created_by_id' => Auth::user()->id];
         $person = Person::create($request->all()+ ['created_by_id' => Auth::user()->id]);
-
-
-        return redirect()->route('admin.people.index');
-    }
-
-
-    /**
-     * Show the form for editing ExpenseCategory.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        if (! Gate::allows('person_edit')) {
-            return abort(401);
-        }
+        $person->load(['created_by' => function ($query) {
+            $query->select('id', 'name', 'surname', 'mobile');
+        }]);
         
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');
-
-        $person = Person::findOrFail($id);
-
-        return view('admin.people.edit', compact('person', 'created_bies'));
-    }
-
-    /**
-     * Update ExpenseCategory in storage.
-     *
-     * @param  \App\Http\Requests\Admin\UpdatePersonRequest  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdatePersonRequest $request, $id)
-    {
-        if (! Gate::allows('person_edit')) {
-            return abort(401);
-        }
-        $person = Person::findOrFail($id);
-        $person->update($request->all());
-
-
-
-        return redirect()->route('admin.people.index');
+        return $person;
+        // return redirect()->route('admin.people.index');
     }
 
 
-    /**
-     * Display ExpenseCategory.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        if (! Gate::allows('person_view')) {
-            return abort(401);
-        }
 
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');
+/**
+ * Update Person in storage.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  int  $id
+ * @return \Illuminate\Http\Response
+ */
+public function update(Request $request, $id)
+{
+    // if (! Gate::allows('person_edit')) {
+    //     return abort(401);
+    // }
 
-        $person = Person::findOrFail($id);
+    $person = Person::findOrFail($id);
+
+    // Update the person with new data
+    $person->update($request->all());
+
+    $person->load(['created_by' => function ($query) {
+        $query->select('id', 'name', 'surname', 'mobile');
+    }]);
+    
+    return $person;
+
+}
+
+// Inside PeopleController
+
+public function uploadPhoto(Request $request)
+{
+    // if (! Gate::allows('person_create')) {
+    //     return abort(401);
+    // }
+    Log::info('uploadPhoto: ' . json_encode($request->all()));
+
+    if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+        $photo = $request->file('photo');
+
+        // Validate the photo size and type here if needed
+
+        // Generate a unique file name
+        $fileName = time() . '_' . Str::slug($photo->getClientOriginalName()) . '.' . $photo->getClientOriginalExtension();
         
+        // Move the file to the uploads directory
+        $photo->move(public_path('uploads'), $fileName);
 
-
-        return view('admin.people.show', compact('person','created_bies'));
+        // Return the file path
+        // return response()->json(['status' => 'success', 'file_path' => url('uploads/' . $fileName)]);
+        return response()->json(['status' => 'success', 'file_path' =>'uploads/' . $fileName]);
     }
 
+    return response()->json(['status' => 'error', 'message' => 'Invalid file or no file uploaded'], 400);
+}
 
+
+public function getUserVillages(Request $request)
+{
+
+    
+    $user = Auth::user();
+    Log::info('$request->input data: ');
+
+    // Fetching unique village IDs created by the user
+    $villageIds = Person::where('created_by_id', $user->id)
+                         ->distinct()
+                         ->pluck('village_id');
+
+    // Fetch the details of each unique village and count the number of people
+    $villages = Village::whereIn('id', $villageIds)
+                       ->withCount('people') // Assuming you have a 'people' relation in your Village model
+                       ->get()
+                       ->map(function ($village) {
+                           $villageDetails = $village->getAddress();
+                           $villageDetails['people_count'] = $village->people_count;
+                           return $villageDetails;
+                       });
+
+    return response()->json($villages);
+}
+
+
+    
     /**
      * Remove ExpenseCategory from storage.
      *
@@ -179,6 +236,8 @@ class PeopleController extends Controller
         return redirect()->route('admin.people.index');
     }
 
+
+    
     /**
      * Delete all selected ExpenseCategory at once.
      *
@@ -197,4 +256,75 @@ class PeopleController extends Controller
             }
         }
     }
+
+    
+
+    /**
+     * Get a list of all subPlaces for a given place.
+     *
+     * @param string $placeType The type of place (e.g., 'Country', 'State', etc.).
+     * @param int    $placeId   The ID of the place.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSubPlacesPeopleCount(Request $request)
+    {
+        $placeType = $request->input('place_type');
+        $placeId = $request->input('id');
+        // Convert the place type to the corresponding model class name
+        $modelClass = '\\App\\Models\\PlaceRelated\\' . Str::studly($placeType);
+        // Check if the class exists
+        if (!class_exists($modelClass)) {
+            return response()->json(['error' => 'Invalid place type'], 400);
+        }
+        // Find the place by ID
+        $place = $modelClass::find($placeId);
+        if (!$place) {
+            return response()->json(['error' => 'Place not found'], 404);
+        }
+        // Check if the totalPeopleCount method exists in the model
+        if (method_exists($place, 'peopleCountBySubplace')) {
+            $subPlaces = $place->peopleCountBySubplace();
+        } else {
+            return response()->json(['error' => 'Unable to get people count for this place type'], 400);
+        }
+        // return $place->totalPeopleCount();
+        return response()->json($subPlaces);
+
+    }
+
+    /**
+     * Get the total number of people for a given place.
+     *
+     * @param string $placeType The type of place (e.g., 'Country', 'State', etc.).
+     * @param int    $placeId   The ID of the place.
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTotalPeopleCount(Request $request)
+    {
+        $placeType = $request->input('place_type');
+        $placeId = $request->input('id');
+        // Convert the place type to the corresponding model class name
+        $modelClass = '\\App\\Models\\PlaceRelated\\' . Str::studly($placeType);
+
+        // Check if the class exists
+        if (!class_exists($modelClass)) {
+            return response()->json(['error' => 'Invalid place type'], 400);
+        }
+
+        // Find the place by ID
+        $place = $modelClass::find($placeId);
+        if (!$place) {
+            return response()->json(['error' => 'Place not found'], 404);
+        }
+
+        // Check if the totalPeopleCount method exists in the model
+        if (method_exists($place, 'totalPeopleCount')) {
+            $peopleCount = $place->totalPeopleCount();
+        } else {
+            return response()->json(['error' => 'Unable to get people count for this place type'], 400);
+        }
+
+        return response()->json(['people_count' => $peopleCount]);
+    }
+
 }

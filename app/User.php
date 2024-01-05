@@ -9,14 +9,18 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use App\Models\ProfileRelated\Profile;
-use App\Models\MatrimonyUsers;
+use Illuminate\Support\Str;
+// use App\Models\MatrimonyUsers;
 
 class User extends Authenticatable implements JWTSubject
 // class User extends Authenticatable
 {
     use Notifiable, HasFactory;
+
     protected $fillable = ['surname','name','username', 'email','mobile','password',
-     'role_id', 'username','position','admin','editing_village_id']; //'currency_id',
+    'date_of_birth', 'sex', 'marriage_status', 'blood_group', 'education', 'occupation',
+     'role_id', 'username','position','admin','editing_village_id','place_id', 'place_table_name','is_approved', 'approved_by_id']; //'currency_id',
+
      protected $hidden = [
         'password',
         'remember_token',
@@ -24,6 +28,17 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function toCustomArray()
+    {
+        // Get the default array representation of the user
+        $array = $this->toArray();
+
+        // Add additional details
+        $array['place'] = $this->getAddress();
+        // $array['avatar'] = $this->profile ? $this->profile->getAvatar() : 'default-avatar-path';
+
+        return $array;
+    }
 
     public function setRoleIdAttribute($input)
     {
@@ -37,11 +52,6 @@ class User extends Authenticatable implements JWTSubject
     public function profile()
     {
         return $this->hasOne(Profile::class);
-    }
-
-    public function matrimonyusers()
-    {
-        return $this->hasOne(MatrimonyUsers::class);
     }
 
     public function sendPasswordResetNotification($token)
@@ -59,45 +69,31 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function tweets()
+    public function getAddress()
     {
-        return $this->hasMany(Tweet::class);
+        $placeTableName = $this->place_table_name;
+        $placeId = $this->place_id;
+
+        // Dynamically determine the model class based on the table name
+        $modelClass = '\\App\\Models\\PlaceRelated\\' . Str::studly($placeTableName);
+
+        if (!class_exists($modelClass)) {
+            return 'Model not found';
+        }
+
+        // Fetch the place model instance
+        $place = $modelClass::find($placeId);
+
+        if (!$place) {
+            return 'Place not found';
+        }
+
+        // Call the getAddress method on the place model
+        return $place->getAddress();
     }
 
-    public function retweets()
-    {
-        return $this->hasMany(Retweet::class);
-    }
-
-    public function allTweets()
-    {
-        return Tweet::whereIn('user_id', $this->follows()->pluck('following_id')->push($this->id))
-                    ->orWhereIn('id', $this->retweets()->pluck('tweet_id'))
-                    ->with('user')
-                    ->latest()
-                    ->paginate(10);
-    }
 
 
-    public function likes()
-    {
-        return $this->hasMany(Like::class);
-    }
-
-    public function following()
-    {
-        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'following_id');
-    }
-
-    public function followers()
-    {
-        return $this->belongsToMany(User::class, 'followers', 'following_id', 'follower_id');
-    }
-
-    public function mentionedIn()
-    {
-        return $this->belongsToMany(Tweet::class, 'mentions');
-    }
 
     // public function getavatar()
     // {

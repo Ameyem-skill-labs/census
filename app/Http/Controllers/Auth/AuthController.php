@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use App\Models\ProfileRelated\Profile;
-
+use Illuminate\Support\Facades\Log;
 use App\Models\TweetRelated\Tweet;
 use App\User;
 use App\Http\Controllers\Controller;
@@ -26,70 +26,6 @@ use phpseclib3\Crypt\RSA;
 use phpseclib3\Crypt\Random;
 
 
-
-// function decryptData($encryptedData) {
-//     $privateKeyPem = '-----BEGIN RSA PRIVATE KEY-----
-//     MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQChlXunSm5dJ3E3
-//     hDOKHlhmAyN5E+bTx69p0+bmlfsaPioSl2s2GQINWNLhbQDfIkCwnzab3bBG2h/U
-//     3r1chPjoNuxGfTW5/iKp5vCL2PLq3uSm6o4cYb7w4t34NGcw3X6OlkOoSb8bvSqq
-//     daD9Z81Dmu/0wpHZpvF8DPHl2ZrYfKp/Ens5wfNcSyOcSaea5H+Gr5tskxRWiEGY
-//     7KKB+e+1ObRbbjPQUyNxrCBI6lQO0l9oy1LYXXycID4gAlcmaVX/q7M3Eyw1NwxB
-//     +ot+f+A1RnK1/Eapyo1OHM/ZEPPUXGEoZW2pxY1UB5D61IiOVdAL6mcPEJEe47Dl
-//     l9+CiertAgMBAAECggEAHylz+nRZSm/T3tAJHIbzp2DNk4kqCAfHpZIvQqMEFTCN
-//     7p3zGDDEe4x4xu69r0qszSM3ZeHgIBnq76OxQ0mFs0r8UC/Pj7oaN0gJdf72AiPQ
-//     Vvx/Qav8JfqqsjZw/DSLNrZ1/9uRFqlptAwRay18oaAczMhFVoNiqPjaIejQexVp
-//     PNIBUgZIQLXhp40UdFkC2Y8HDa5kGJeibz624eMuUNbQ61tJwnSeyCpqsIrlurCP
-//     pzd7kZZWe9euq8FEFif3uSOJIc3F4t1MA7rFsw1hRhgx2Y/Ezhf0O7QcjXZ8LsmY
-//     gOdMJhqRk5RYtJCzBiQIJF+5Dy1LfXi45vubom8tpQKBgQDXUpxhGJJsZ7HjjNeF
-//     kB3YCCcGezXumBuWqV9akPVykw+wSLon/d8TWFGOzxw+hlcacS4jQBBC9iC5w2jS
-//     u+9MyZYZC/CGOruxzdRXTV0Jsw36TjwE0oVUKktAr5KJ9pmCQCsyIE+4BKZSemzW
-//     3uXEgBQAcznXtKfVOCgYIuMoPwKBgQDAG/gS9XayYb+05r03oADxiL6RkPExrJsS
-//     It/bbKvuS+Li1Nx+GsuzUPgnPYkChbNjb1ZRnxvxo5rMyK4uKZ6t5o8Vtzgf62Nq
-//     Jo6648Libdrk+cusZ22vhAWRetDgvGf2IRYtksNQb5D1Z2cIs/k+wyfwD0N1Z3mR
-//     Gvv9c/iB0wKBgQDPVRORBvkO+zY2Fsr8J84k04zIV+GRkdOW2hYf/c7p+SM1KoJd
-//     ub2QQg2eRl06815x7qNve+NsptTSKpAHwsDknoMyMOX0Sh+rULdzLOI2UbxW1fhC
-//     6HdLmMIHUkf3IoWj/qfZR3WbipagepPMvqpd8LnRySHcS28EB2PMAePbPwKBgFOC
-//     lQdgzxViKpzwBOcOVfqpL/ZFZKPsXYi3wko3ZlHziRCD6cmjylML6qPcOxfumPmr
-//     p4FZwiL7tMo6noUQsJr189NDz1EI2TGGy1rwsYIOsS4CbIhoeaTnpigElJJtNGAp
-//     J+PtvZvUs9YJ+h8tZTbkTRMs/20k6xKqAUq/RBLjAoGAQUzhTLj6yHMwOEc+Wkp4
-//     y+97uz832Qs1A/i9/3ZkL9yuOnaAYi2qwNPTKFYJsap8HGg5n93DQS5Aq2CLpT56
-//     fXDOWssB+BbUQWOJEgSNuvaCoBMK995Jq3CY0HlkiIkz9Gd5jTQZT5bhtRsgSdSp
-//     bbPtWtkwDqkvkEMUt2gB1pc=
-//     -----END RSA PRIVATE KEY-----';
-//     $rsa = PublicKeyLoader::load($privateKeyPem);
-
-//     // $rsa->loadKey($privateKeyPem);
-//     $rsa->withHash ('sha256');
-//     $rsa->withMGFHash('sha1');
-//     $rsa->withPadding(RSA::ENCRYPTION_OAEP);
-
-//     $decryptedData = $rsa->decrypt($encryptedData);
-
-//     return $decryptedData;
-
-//     $rsa = new RSA();
-//     $rsa->loadKey($privateKeyPem);
-//     $rsa->setHash('sha256');
-//     $rsa->setMGFHash('sha1');
-//     $rsa->setEncryptionMode(RSA::ENCRYPTION_OAEP);
-
-//     $decodedData = base64_decode($encryptedData);
-//     $decryptedData = $rsa->decrypt($decodedData);
-
-//     return json_decode($decryptedData, true);
-
-//     // $publicKey = PublicKeyLoader::load($privateKeyPem)
-//     // ->withHash('sha256')
-//     // ->withMGFHash('sha1');
-
-// // $encryptedData = $publicKey->encrypt(json_encode($data));
-
-// // return base64_encode($encryptedData);
-
-//     // return base64_encode($encryptedData);
-
-//     return $publicKey->decrypt(base64_encode($encryptedData));
-// }
 
 class AuthController extends Controller
 {
@@ -109,34 +45,34 @@ class AuthController extends Controller
     // }
 
     public function loadUser(Request $request)
-{
-    try {
-        $user = $request->user();
-        $followerCount = $user->followers()->count();
-        $followingCount = $user->following()->count();
+    {
+        try {
+            $user = $request->user();
+            $followerCount = $user->followers()->count();
+            $followingCount = $user->following()->count();
 
-        $userData = $user->toArray();
-        $userData['follower_count'] = $followerCount;
-        $userData['following_count'] = $followingCount;
-        // $userData['avatar']  =asset($user->profile()->avatar);
-        $profile = $user->profile;
-        // Check if the profile exists
-        $profile = $user->profile;
-        if ($profile) {
-            $userData['avatar'] = asset($profile->avatar);
-        } else {
-            // Provide a default value for the avatar
-            // $userData['avatar'] = asset('path/to/default/avatar.png');
-            $userData['avatar'] = asset('images/avatar/dummy.webp');
+            $userData = $user->toArray();
+            $userData['follower_count'] = $followerCount;
+            $userData['following_count'] = $followingCount;
+            // $userData['avatar']  =asset($user->profile()->avatar);
+            $profile = $user->profile;
+            // Check if the profile exists
+            $profile = $user->profile;
+            if ($profile) {
+                $userData['avatar'] = asset($profile->avatar);
+            } else {
+                // Provide a default value for the avatar
+                // $userData['avatar'] = asset('path/to/default/avatar.png');
+                $userData['avatar'] = asset('images/avatar/dummy.webp');
+            }
+
+            // $userData['avatar'] = asset($profile->avatar);
+            return response()->json(['user' => $userData]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        // $userData['avatar'] = asset($profile->avatar);
-        return response()->json(['user' => $userData]);
-
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
     }
-}
 
    
 
@@ -146,6 +82,7 @@ class AuthController extends Controller
         // $encryptedData = $request->input('encrypted_data');
         // $credentials= decryptData($encryptedData);
         // return $credentials;
+        Log::info('Login: ' );
         
         $request->validate([
             'email' => 'required|string|email',
@@ -166,14 +103,15 @@ class AuthController extends Controller
                 'authorisation' => [
                     'token' => $token,
                     'type' => 'bearer',
-                ]
+                ],
+                'user'=>Auth::user(),
             ]);
 
     }
 
 
 
-        public function register(Request $request){
+    public function register(Request $request){
         $url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         // return $request;
 
@@ -181,6 +119,7 @@ class AuthController extends Controller
             Session::forget('error_message');
             Session::forget('success_message');
             $data = $request->all();
+            // return $data;
             // echo "<pre>"; print_r($data); die;
             $rules=[
                 'surname'=>'required|regex:/^[\pL\s\-]+$/u',
@@ -214,8 +153,7 @@ class AuthController extends Controller
                 Session::flash('error_message',$message);
                 // return redirect()->back(); 
                 if(strpos($url, 'api') !== false){
-                    // return $message;}
-                    return response()->json(['info'=>['status'=>'Error','message'=>$message]]);
+                     return response()->json(['info'=>['status'=>'Error','message'=>$message]]);
                 }
                 else{
                     return redirect()->back();
@@ -227,6 +165,7 @@ class AuthController extends Controller
                 $user->name=$data['name'];
                 $user->email=$data['email'];
                 $user->mobile=$data['mobile'];
+                $user->role_id=$data['role_id'];
                 $user->password=bcrypt($data['password']);
                 $user->status=0;
                 $user->save();
@@ -337,6 +276,19 @@ class AuthController extends Controller
                 'token' => Auth::refresh(),
                 'type' => 'bearer',
             ]
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        // {"place_id": 5442, "place_table_name": "District"}
+        $user = Auth::user();
+        $user->fill($request->all());
+        $user->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Profile updated successfully.',
+            'user'=>$user,
         ]);
     }
 

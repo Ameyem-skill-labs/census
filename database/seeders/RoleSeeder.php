@@ -16,10 +16,13 @@ class RoleSeeder extends Seeder
     { $roles = [
             
         ['id' => 1, 'title' => 'Administrator (can create other users)',],
-        ['id' => 2, 'title' => 'User with full rights',],
-        ['id' => 3, 'title' => 'Volunteer',],
-        ['id' => 4, 'title' => 'Previlized user',],
-        ['id' => 5, 'title' => 'Simple user',],
+        ['id' => 2, 'title' => 'State President',],
+        ['id' => 3, 'title' => 'District President',],
+        ['id' => 4, 'title' => 'DEO (Data Entry Officer)',],        
+        ['id' => 5, 'title' => 'State Member',],
+        ['id' => 6, 'title' => 'District Member',],
+        ['id' => 7, 'title' => 'Village Member',],
+        ['id' => 8, 'title' => 'Other',],
 
     ];
     foreach ($roles as $item) {

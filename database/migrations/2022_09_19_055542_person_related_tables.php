@@ -23,8 +23,12 @@ return new class extends Migration
         Schema::create('professions', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->foreignId('created_by_id')->references('id')->on('users');
             $table->timestamps();
         });
+
+
+        
 
       
     }
@@ -40,6 +44,8 @@ return new class extends Migration
         Schema::dropIfExists('qualifications');
         
         Schema::dropIfExists('professions');
+        // Schema::dropIfExists('all_professions');
+        // Schema::dropIfExists('profession_categories');
 
     }
 };

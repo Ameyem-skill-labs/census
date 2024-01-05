@@ -11,19 +11,28 @@ class CreateUsersTable extends Migration
             $table->id();
             $table->string('surname',120);
             $table->string('name',120);
+            $table->string('avatar')->nullable();
             $table->string('username',20)->nullable()->unique();
             $table->string('email',50)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('mobile',15);
-            // $table->string('avatar')->nullable();
+            $table->enum('sex', ['male', 'female', 'other'])->nullable();
+            $table->enum('marriage_status', ['single', 'married', 'widow', 'divorced'])->nullable();
+            $table->enum('blood_group', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])->nullable();
+            $table->enum('education', ['nil', 'under_10th', '10th_pass', '12th_pass', 'graduate','masters'])->nullable();
+            $table->enum('occupation', ['study', 'unemployed', 'gvt_emp', 'pvt_emp', 'farmer', 'self_emp', 'business', 'other'])->nullable();
             $table->tinyInteger('status')->nullable();
             $table->integer('editing_village_id')->nullable();
+            $table->integer('place_id')->nullable();
+            $table->string('place_table_name',15)->nullable();
             $table->unsignedInteger('role_id')->nullable();
+            $table->boolean('is_approved')->nullable();
+            $table->foreignId('approved_by_id')->nullable()->constrained('users');
             $table->rememberToken();
             $table->timestamps();
 
-            $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
+            $table->foreign('role_id')->references('id')->on('roles');
         });
     }
 

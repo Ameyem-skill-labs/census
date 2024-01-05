@@ -12,15 +12,15 @@ class VillageSeeder extends Seeder
 {
     public function run()
     {
-        Schema::dropIfExists('villages');
-        Schema::create('villages', function (Blueprint $table) {
-            $table->id();
-            $table->string('name',100);
-            $table->foreignId('mandal_id')->constrained()->onDelete('cascade');
-            $table->foreignId('created_by_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['name', 'mandal_id']);
-            $table->timestamps();
-        });
+        // Schema::dropIfExists('villages');
+        // Schema::create('villages', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('name',100);
+        //     $table->foreignId('mandal_id')->constrained()->onDelete('cascade');
+        //     $table->foreignId('created_by_id')->references('id')->on('users')->onDelete('cascade');
+        //     $table->unique(['name', 'mandal_id']);
+        //     $table->timestamps();
+        // });
         // Create 20 instances of the Village model using the VillageFactory
         // Village::factory()->count(20)->create();
         $items = [
@@ -176,34 +176,34 @@ class VillageSeeder extends Seeder
         ['id' => 578337, 'name' => 'Mummadivaram', 'mandal_id' => 47050, 'created_by_id'=>1],
         ['id' => 578338, 'name' => 'Elugur( Rangampet)', 'mandal_id' => 47050, 'created_by_id'=>1],
         ['id' => 578339, 'name' => 'Nallabelle', 'mandal_id' => 47050, 'created_by_id'=>1],
-        ['id' => 578453, 'name' => 'Gundenga', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578454, 'name' => 'Madanapur', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578455, 'name' => 'Gajulagattu', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578456, 'name' => 'Ayodhyapur', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578457, 'name' => 'Ponugodu', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578458, 'name' => 'Keshavapatnam', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578459, 'name' => 'Vengapet', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578460, 'name' => 'Bhupathipet', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578461, 'name' => 'Adivarampet', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578462, 'name' => 'Chinnayellapur', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578463, 'name' => 'Seetanagar', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578464, 'name' => 'Veerampet', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578465, 'name' => 'Ootla', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578466, 'name' => 'Macherla', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578467, 'name' => 'Gudur', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578468, 'name' => 'Bollepalle', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578469, 'name' => 'Rajanpalle', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578470, 'name' => 'Naikpalle', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578471, 'name' => 'Teegalveni', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578472, 'name' => 'Govindapur', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578473, 'name' => 'Damaravancha', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578474, 'name' => 'Apparajpalle', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578475, 'name' => 'Boddugonda', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578476, 'name' => 'Kolhapuram', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578477, 'name' => 'Kongaragidda', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578478, 'name' => 'Matwada', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578479, 'name' => 'Neelavancha', 'mandal_id' => 47110, 'created_by_id'=>1],
-        ['id' => 578480, 'name' => 'Thimmapur', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578453, 'name' => 'Gundenga', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578454, 'name' => 'Madanapur', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578455, 'name' => 'Gajulagattu', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578456, 'name' => 'Ayodhyapur', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578457, 'name' => 'Ponugodu', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578458, 'name' => 'Keshavapatnam', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578459, 'name' => 'Vengapet', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578460, 'name' => 'Bhupathipet', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578461, 'name' => 'Adivarampet', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578462, 'name' => 'Chinnayellapur', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578463, 'name' => 'Seetanagar', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578464, 'name' => 'Veerampet', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578465, 'name' => 'Ootla', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578466, 'name' => 'Macherla', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578467, 'name' => 'Gudur', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578468, 'name' => 'Bollepalle', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578469, 'name' => 'Rajanpalle', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578470, 'name' => 'Naikpalle', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578471, 'name' => 'Teegalveni', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578472, 'name' => 'Govindapur', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578473, 'name' => 'Damaravancha', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578474, 'name' => 'Apparajpalle', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578475, 'name' => 'Boddugonda', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578476, 'name' => 'Kolhapuram', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578477, 'name' => 'Kongaragidda', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578478, 'name' => 'Matwada', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578479, 'name' => 'Neelavancha', 'mandal_id' => 47110, 'created_by_id'=>1],
+        // ['id' => 578480, 'name' => 'Thimmapur', 'mandal_id' => 47110, 'created_by_id'=>1],
         ['id' => 579087, 'name' => 'Tekuloddi', 'mandal_id' => 47310, 'created_by_id'=>1],
         ['id' => 579088, 'name' => 'Seetarampuram', 'mandal_id' => 47310, 'created_by_id'=>1],
         ['id' => 579089, 'name' => 'Koderu', 'mandal_id' => 47310, 'created_by_id'=>1],
@@ -6626,7 +6626,7 @@ class VillageSeeder extends Seeder
         ['id' => 802948, 'name' => 'Bheemunipatnam (M + OG)', 'mandal_id' => 48651, 'created_by_id'=>1],
         ['id' => 8029481, 'name' => 'Bheemunipatnam (M)', 'mandal_id' => 48651, 'created_by_id'=>1],
         ['id' => 4866, 'name' => 'Visakhapatnam (Rural)', 'mandal_id' => 48660, 'created_by_id'=>1],
-        ['id' => 4867, 'name' => 'Visakhapatnam (Urban)', 'mandal_id' => 48671, 'created_by_id'=>1],
+        ['id' => 4867, 'name' => 'Visakhapatnam (Urban)', 'mandal_id' => 48670, 'created_by_id'=>1],
         ['id' => 4868, 'name' => 'Pedagantyada', 'mandal_id' => 48680, 'created_by_id'=>1],
         ['id' => 4869, 'name' => 'Gajuwaka', 'mandal_id' => 48690, 'created_by_id'=>1],
         ['id' => 586151, 'name' => 'Kannuru', 'mandal_id' => 48700, 'created_by_id'=>1],

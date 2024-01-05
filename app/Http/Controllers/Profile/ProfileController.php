@@ -59,6 +59,11 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+         // Example log message
+        // Log::info('Update profile method called for user with ID: ',$request);
+        Log::info('Update profile method called for user with ID: ' . $request->user()->id, ['request' => $request->all()]);
+
+
         $user = Auth::user();
         $profile = Profile::where('user_id', $user->id)->first();
 

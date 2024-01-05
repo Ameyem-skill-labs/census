@@ -24,7 +24,7 @@ class StateSeeder extends Seeder
         ];
 
         foreach ($items as $item) {
-            \App\Models\Country::create($item);
+            \App\Models\PlaceRelated\Country::create($item);
         }
 
         $items = [
@@ -36,7 +36,7 @@ class StateSeeder extends Seeder
         ];
 
         foreach ($items as $item) {
-            \App\Models\State::create($item);
+            \App\Models\PlaceRelated\State::create($item);
         }
     }
 }

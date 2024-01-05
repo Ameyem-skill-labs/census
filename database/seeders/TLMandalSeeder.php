@@ -470,8 +470,12 @@ class TLMandalSeeder extends Seeder
         ['id' => 4768,'census_name' => 'Vemsoor', 'name' => 'Vemsoor', 'district_id' => 541],
     ];
         foreach ($items as $item) {
-            \App\Models\Mandal::create($item);
+            \App\Models\PlaceRelated\Mandal::create($item);
         }   
+
+
+
+      
     }
 }
     

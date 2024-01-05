@@ -7,46 +7,122 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use App\Models\ProfileRelated\Profile;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
-    public function getUsers(){
-        $user = auth()->user();
+    public function getUsers(Request $request)
+{
+    // {"filters": {"role_id": 4},"user":{"id":2}}
+    Log::info('$request->input data: ' . json_encode($request->input()));
 
-        if ($user === null) {
-            return response()->json(['message' => 'User not authenticated'], 401);
-        }
-
-    // $users = User::
-    // // with('profile:id,user_id') //avatar
-    //     // ->
-    //     select('id', 'surname', 'name', 'username')
-    //     ->where('id', '!=', $user->id)
-    //     ->get();
-
-    $users = User::select('id', 'surname', 'name', 'username')
-    ->where('id', '!=', $user->id)
-    ->take(50)
-    ->get();
-        // return  $users;
-
-        // foreach ($users as $u) {
-        //     if ($u->profile->avatar === null) {
-        //         $u->profile->avatar = asset('images/avatar/dummy.webp');
-        //     }
-        // }
-        foreach ($users as $user) {
-            $properUsers[] = $user->properUser();
-        }
+    $filters = $request->input('filters', []);
     
-        return response()->json($properUsers);
 
+    $validatedData = $request->validate([
+        'user.id' => 'integer' 
+    ]);
+    $target_user = $request->input('user', []);
+    // {"filters": {"role_id": 4},"user":{"id": user.id },"use_place_filter":{"decision":"yes"}};
+    $use_place_filter = $request->input('use_place_filter', []);
+    $place_filter_decision = isset($use_place_filter["decision"])? $use_place_filter["decision"]:"no" ;
+    // $roleId = (int) $request->input('filters.role_id');
+    // $userId = (int) $request->input('user.id');
+    // $decision = (int) $request->input('use_place_filter.decision');
+
+    // Log::info('$request->input data $filters: ' . json_encode($filters));
+    // Log::info('$request->input data decision: ' . json_encode($place_filter_decision));
+    // $user_id = $target_user['id'] ?? null;
+    $user_id = $validatedData['user']['id']?? null;
+    if ( $place_filter_decision=='yes'){    
+       
+        if ($user_id) {
+            $user = User::find($user_id); // Fetches the user with the given ID
+            
+            // Now you can use $user for further logic
+        }
+        else{
+            $user=Auth::user();
+        }
+        $modelClass = '\\App\\Models\\PlaceRelated\\' . Str::studly($user->place_table_name?? '');  
+        if (!class_exists($modelClass)) {
+            return response()->json(['error' => 'Model not found'], 404);
+        }
+        // Instantiate the model with the specified ID
+        $placeInstance = new $modelClass;
+        // $placeInstance->id = $super_place['place_id'] ?? null;
+        $placeInstance->id = $user->place_id?? null;
+
+        // Check if the getSubplaceIds method exists and call it
+        if (method_exists($placeInstance, 'getSubplaceIds')) {
+            $subplace_ids = $placeInstance->getSubplaceIds();
+        } else {
+            $subplace_ids = [];
+        }       
+        Log::info('User data: ' . json_encode($user->place_table_name)); 
+        Log::info('User data: ' . json_encode($subplace_ids));
     }
+    $query = User::query();
+    // return  $subplace_ids;
+    
+    // // Apply filters
+    foreach ($filters as $key => $value) {
+        $query->where($key, $value);
+        Log::info('$key, $value: ' . json_encode( $value));
+    }
+    if (!empty($subplace_ids)) {
+        $query->whereIn('place_id', $subplace_ids);
+    }
+    // return response()->json($query);
+    $users = $query->get()->map->toCustomArray();
+    if (count($users) === 0) {
+        // Return a warning response if users array is empty
+        return response()->json([
+            'warning' => 'No users found',
+            'status' => 'warning'
+        ], 200); // 200 OK, as this is not an error condition
+    }
+    
+    Log::info('Users data: ' . json_encode($users));
+    return response()->json($users) ;
+    // $mstr='[{"approved_by_id": null, "avatar": null, "blood_group": null, "created_at": "2023-12-18T10:06:34.000000Z", "editing_village_id": null, "education": null, "email": "abdeo@dummy.com", "email_verified_at": null, "id": 11, "is_approved": null, "marriage_status": null, "mobile": "9000000018", "name": "User18", "occupation": null, "place": {"district": "Palnadu", "id": 
+    //     50460, "mandal": "Karempudi", "state": "Andhrapradesh"}, "place_id": 50460, "place_table_name": "Mandal", "role_id": 4, "sex": null, "status": 0, "surname": "Surname18", "updated_at": "2023-12-18T10:39:14.000000Z", "username": "user18"}, {"approved_by_id": null, "avatar": null, "blood_group": null, "created_at": "2023-12-18T10:06:34.000000Z", "editing_village_id": null, "education": null, "email": "user19@dummy.com", "email_verified_at": null, "id": 12, "is_approved": null, "marriage_status": null, "mobile": "9000000019", "name": "User19", "occupation": 
+    //     null, "place": {"district": "Palnadu", "id": 50460, "mandal": "Karempudi", "state": "Andhrapradesh"}, "place_id": 50460, "place_table_name": "Mandal", "role_id": 4, "sex": null, "status": 0, "surname": "Surname19", "updated_at": "2023-12-18T10:06:34.000000Z", "username": "user19"}]';
+    // return '[]';
+     
+}
+
+    public function updateOtherUser(Request $request)
+{
+    // Validate the request data
+    $validatedData = $request->validate([
+        'user_id' => 'required|integer',
+        'is_approved' => 'required|boolean',
+        'approved_by' => 'required|integer'
+    ]);
+
+    // Find the user by ID
+    $user = User::find($validatedData['user_id']);
+
+    // Check if the user exists
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    // Update the user's approval status
+    $user->is_approved = $validatedData['is_approved'];
+    $user->approved_by_id = $validatedData['approved_by']; // Assuming you have an approved_by_id column
+    $user->save();
+
+    return response()->json(['message' => 'User updated successfully', 'user' => $user]);
+}
+
     public function checkUser(Request $request){
 
         $user = $request->user();

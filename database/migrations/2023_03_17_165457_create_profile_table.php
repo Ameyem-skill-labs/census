@@ -11,29 +11,28 @@ class CreateProfileTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('avatar')->nullable();  
-            $table->string('cover_photo')->nullable();          
+            $table->string('gender')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('marriage_status')->nullable();
+            $table->text('about')->nullable();
+            $table->string('mobile')->nullable();
             $table->date('date_of_birth')->nullable();
-            $table->enum('gender', ['Male', 'Female', 'Other'])->nullable();
-            $table->boolean('married', ['Married', 'Single'])->nullable();
-            $table->string('gotram')->nullable();
-            $table->text('bio')->nullable();
-            $table->text('best_known_for')->nullable();
-            $table->text('achievements_recognitions')->nullable();
-            $table->string('native_place_id')->nullable();
-            $table->string('work_place_id')->nullable();
-            $table->string('education_id')->nullable();
-            $table->string('profession_id')->nullable();            
-            $table->text('about_work')->nullable();
-            $table->string('work_experience')->nullable();
-            $table->text('interests')->nullable();
-            $table->string('twitter_handle')->nullable();
-            $table->string('linkedin_handle')->nullable();
-            $table->string('facebook_handle')->nullable();
-            $table->string('instagram_handle')->nullable();
+            $table->unsignedBigInteger('education_id')->nullable();
+            $table->unsignedBigInteger('profession_id')->nullable();
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->unsignedBigInteger('native_place_id')->nullable();
+            $table->unsignedBigInteger('present_place_id')->nullable();
+        
+            // Foreign keys
+            $table->foreign('education_id')->references('id')->on('qualifications')->onDelete('set null');
+            $table->foreign('profession_id')->references('id')->on('professions')->onDelete('set null');
+
+            $table->foreign('native_place_id')->references('id')->on('villages')->onDelete('set null');
+            $table->foreign('present_place_id')->references('id')->on('villages')->onDelete('set null');
+        
             $table->timestamps();
         });
-
+        
         // Schema::create('genders', function (Blueprint $table) {
         //     $table->id();
         //     $table->string('name');

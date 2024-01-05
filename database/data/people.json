@@ -1,0 +1,9 @@
+[
+{"type":"header","version":"5.2.0","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"thogata_census"},
+{"type":"table","name":"people","database":"thogata_census","data":
+[
+
+]
+}
+]
