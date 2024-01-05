@@ -240,7 +240,7 @@ class AuthController extends Controller
     public function confirm($encodedEmail) {
         $email = base64_decode($encodedEmail);
         $user = User::where('email', $email)->first();
-    
+        Log::info('confirm: ',$user );
         if ($user) {
             if ($user->status == 1) {
                 $message = "Your Account is Already Activated. Please Login.";
