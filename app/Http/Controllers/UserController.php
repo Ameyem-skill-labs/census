@@ -20,7 +20,7 @@ class UserController extends Controller
     public function getUsers(Request $request)
 {
     // {"filters": {"role_id": 4},"user":{"id":2}}
-    Log::info('$request->input data: ' . json_encode($request->input()));
+    // Log::info('$request->input data: ' . json_encode($request->input()));
 
     $filters = $request->input('filters', []);
     
@@ -65,8 +65,8 @@ class UserController extends Controller
         } else {
             $subplace_ids = [];
         }       
-        Log::info('User data: ' . json_encode($user->place_table_name)); 
-        Log::info('User data: ' . json_encode($subplace_ids));
+        // Log::info('User data: ' . json_encode($user->place_table_name)); 
+        // Log::info('User data: ' . json_encode($subplace_ids));
     }
     $query = User::query();
     // return  $subplace_ids;
@@ -89,7 +89,7 @@ class UserController extends Controller
         ], 200); // 200 OK, as this is not an error condition
     }
     
-    Log::info('Users data: ' . json_encode($users));
+    // Log::info('Users data: ' . json_encode($users));
     return response()->json($users) ;
     // $mstr='[{"approved_by_id": null, "avatar": null, "blood_group": null, "created_at": "2023-12-18T10:06:34.000000Z", "editing_village_id": null, "education": null, "email": "abdeo@dummy.com", "email_verified_at": null, "id": 11, "is_approved": null, "marriage_status": null, "mobile": "9000000018", "name": "User18", "occupation": null, "place": {"district": "Palnadu", "id": 
     //     50460, "mandal": "Karempudi", "state": "Andhrapradesh"}, "place_id": 50460, "place_table_name": "Mandal", "role_id": 4, "sex": null, "status": 0, "surname": "Surname18", "updated_at": "2023-12-18T10:39:14.000000Z", "username": "user18"}, {"approved_by_id": null, "avatar": null, "blood_group": null, "created_at": "2023-12-18T10:06:34.000000Z", "editing_village_id": null, "education": null, "email": "user19@dummy.com", "email_verified_at": null, "id": 12, "is_approved": null, "marriage_status": null, "mobile": "9000000019", "name": "User19", "occupation": 
@@ -165,7 +165,7 @@ class UserController extends Controller
     
                          $messageData=['name'=>$userDetails['name'],'mobile'=>$userDetails['mobile'],'email'=>$email];
                          Mail::send('emails.register',$messageData,function($message) use($email){
-                             $message->to($email)->subject('Welcome to Our E-Commerce');
+                             $message->to($email)->subject('Welcome to Thogata Veera Kshatriya Sangham');
                         });
 
                         $profile = Profile::firstOrCreate(['user_id' =>$userDetails->id]);

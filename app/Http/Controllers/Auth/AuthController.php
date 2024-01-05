@@ -84,7 +84,7 @@ class AuthController extends Controller
         // $encryptedData = $request->input('encrypted_data');
         // $credentials= decryptData($encryptedData);
         // return $credentials;
-        Log::info('Login: ',$request->all() );
+        // Log::info('Login: ',$request->all() );
         
         // Validation
         $request->validate([
@@ -314,7 +314,7 @@ class AuthController extends Controller
     }
 
     public function forgotpassword(Request $request){
-        Log::info('forgotPassword: ',$request->all() );
+        // Log::info('forgotPassword: ',$request->all() );
         if($request->isMethod('post')){
             $data = $request->all();
             Session::forget('error_message');
@@ -365,7 +365,53 @@ class AuthController extends Controller
 
     }
 
-    // public function account(Request $request){
+   
+
+    public function chkUserPassword(Request $request){
+        if($request->isMethod('post')){
+            $data = $request->all();
+
+            $user_id = Auth::User()->id;
+            $checkPassword = User::select('password')->where('id',$user_id)->first();
+            if(Hash::check($data['current_pwd'],$checkPassword->password)){
+                return "true";
+            }else{
+                return "false";
+            }
+        }
+    }
+    public function updateUserPassword(Request $request){
+        if($request->isMethod('post')){
+            $data = $request->all();
+            Session::forget('error_message');
+            Session::forget('success_message');
+            
+
+            $user_id = Auth::User()->id;
+            $checkPassword = User::select('password')->where('id',$user_id)->first();
+            if(Hash::check($data['current_pwd'],$checkPassword->password)){
+                //Update Password
+                $new_pwd = bcrypt($data['new_pwd']);
+                User::where('id',$user_id)->update(['password'=>$new_pwd]);
+                $message = "Password Updated Successfully";
+                Session::put('success_message',$message);
+                return redirect()->back();
+
+            }else{
+                $message = "Current Password is Incorrect!";
+                Session::put('error_message',$message);
+                return redirect()->back();
+            }
+        }
+    }
+
+    public function me()
+    {
+        return response()->json(auth()->user());
+    }
+
+
+     // public function account(Request $request){
     //     $user_id = Auth::user()->id;
     //     $userDetails = User::find($user_id)->toArray();
     //     // $userDetails = json_decode(json_encode($userDetails),true);
@@ -416,48 +462,5 @@ class AuthController extends Controller
     //     return view('home.user_account')->with(compact('userDetails'));
     //     // return $userDetails;
     // }
-
-    // public function chkUserPassword(Request $request){
-    //     if($request->isMethod('post')){
-    //         $data = $request->all();
-
-    //         $user_id = Auth::User()->id;
-    //         $checkPassword = User::select('password')->where('id',$user_id)->first();
-    //         if(Hash::check($data['current_pwd'],$checkPassword->password)){
-    //             return "true";
-    //         }else{
-    //             return "false";
-    //         }
-    //     }
-    // }
-    // public function updateUserPassword(Request $request){
-    //     if($request->isMethod('post')){
-    //         $data = $request->all();
-    //         Session::forget('error_message');
-    //         Session::forget('success_message');
-            
-
-    //         $user_id = Auth::User()->id;
-    //         $checkPassword = User::select('password')->where('id',$user_id)->first();
-    //         if(Hash::check($data['current_pwd'],$checkPassword->password)){
-    //             //Update Password
-    //             $new_pwd = bcrypt($data['new_pwd']);
-    //             User::where('id',$user_id)->update(['password'=>$new_pwd]);
-    //             $message = "Password Updated Successfully";
-    //             Session::put('success_message',$message);
-    //             return redirect()->back();
-
-    //         }else{
-    //             $message = "Current Password is Incorrect!";
-    //             Session::put('error_message',$message);
-    //             return redirect()->back();
-    //         }
-    //     }
-    // }
-
-    public function me()
-    {
-        return response()->json(auth()->user());
-    }
 
 }
