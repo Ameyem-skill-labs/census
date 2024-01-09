@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\DB;
 Route::get('/', function () {
     return view('home.index');
 });
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+});
+
 // Route::get('/db-test', function () {
 //     // return "Database connection successful!";
 //     try {
