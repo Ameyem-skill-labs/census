@@ -15,6 +15,10 @@ Route::get('/', function () {
 Route::get('/privacy-policy', function () {
     return view('privacy-policy');
 });
+Route::get('/data-deletion-request', function () {
+    return view('data-deletion-request');
+});
+
 
 // Route::get('/db-test', function () {
 //     // return "Database connection successful!";
